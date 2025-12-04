@@ -16,24 +16,28 @@ bool cargarImagen(sf::Texture &imagen, const string &ruta) {
     return true;
 }
 
-// Tamaño de cada casilla jugable del tablero (800x800 dentro de imagen 820)
-const int TAM_CASILLA = 100;
+// Tamaño de cada casilla jugable
+const int TAM_CASILLA = 70;
 
 // Offset donde comienza el tablero dentro del fondo
-const int OFFSET_X = 373; // distancia del borde izquierdo
-const int OFFSET_Y = 50;  // distancia del borde superior
+const int OFFSET_X = 375; // distancia del borde izquierdo
+const int OFFSET_Y = 60;  // distancia del borde superior
 
 int main() {
-    sf::RenderWindow ventana(sf::VideoMode(1200, 900), "Ajedrez SFML");
+    sf::RenderWindow ventana(sf::VideoMode(1000, 700), "Ajedrez SFML");
 
     // ----- Cargar imágenes -----
     sf::Texture fondoTXT, tableroTXT;
-    cargarImagen(fondoTXT, "assets/images/Fondo.png");
-    cargarImagen(tableroTXT, "assets/images/Tablero.png");
+    if (!cargarImagen(fondoTXT, "assets/images/Fondo.png")) return -1;
+    if (!cargarImagen(tableroTXT, "assets/images/Tablero.png")) return -1;
 
     sf::Sprite fondo(fondoTXT);
     sf::Sprite tablero(tableroTXT);
+
     tablero.setPosition(OFFSET_X, OFFSET_Y);
+    // Escalar tablero para que encaje en 580x580 px
+    tablero.setScale(580.0f / tablero.getTexture()->getSize().x,
+                     580.0f / tablero.getTexture()->getSize().y);
 
     // ----- Cargar piezas -----
     map<string, sf::Texture> texturaPieza;
@@ -43,24 +47,22 @@ int main() {
 
     for (string base : tipos) {
         for (string c : colores) {
-            cargarImagen(texturaPieza[base + c], "assets/images/" + base + c + ".png");
+            if (!cargarImagen(texturaPieza[base + c], "assets/images/" + base + c + ".png")) return -1;
         }
     }
 
     // ----- Crear sprites -----
     map<string, sf::Sprite> pieza;
-
     for (auto &t : texturaPieza)
         pieza[t.first].setTexture(t.second);
 
     // ----------- Función para colocar una pieza en el tablero -----------
-
     auto colocarPieza = [&](string nombre, int columna, int fila) {
         pieza[nombre].setPosition(OFFSET_X + columna * TAM_CASILLA,
                                   OFFSET_Y + fila * TAM_CASILLA);
 
-        pieza[nombre].setScale(100.0f / pieza[nombre].getTexture()->getSize().x,
-                               100.0f / pieza[nombre].getTexture()->getSize().y);
+        pieza[nombre].setScale((float)TAM_CASILLA / pieza[nombre].getTexture()->getSize().x,
+                               (float)TAM_CASILLA / pieza[nombre].getTexture()->getSize().y);
     };
 
     // ----------- Colocación inicial de piezas -----------
@@ -151,4 +153,5 @@ int main() {
 
     return 0;
 }
+
 
