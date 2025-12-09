@@ -20,6 +20,4 @@ Ir a la carpeta del proyecto:
 
 Posteriormente, agregar en la terminal: 
 
-> make 
-ó
-> make run
+> .\Juego.exe
